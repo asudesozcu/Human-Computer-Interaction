@@ -2,16 +2,12 @@ package org.example.view;
 
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.screen.Screen;
-import com.googlecode.lanterna.screen.TerminalScreen;
-import com.googlecode.lanterna.terminal.Terminal;
-import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import org.example.Controller.LibraryController;
 
 import java.io.IOException;
 
-// The View class to display the text interface
 public class LibraryView {
-    private final LibraryController controller;
+    private LibraryController controller;
     private MultiWindowTextGUI gui;
     private BasicWindow window;
     private Panel mainPanel;
@@ -20,18 +16,17 @@ public class LibraryView {
         this.controller = controller;
     }
 
-    // Initialize the terminal and GUI
-    public void init() throws IOException {
-        Terminal terminal = new DefaultTerminalFactory().createTerminal();
-        Screen screen = new TerminalScreen(terminal);
-        screen.startScreen();
+    public void setController(LibraryController controller) {
+        this.controller = controller;
+    }
 
+    // Initialize the terminal and GUI
+    public void init(Screen screen) throws IOException {
         gui = new MultiWindowTextGUI(screen);
         window = new BasicWindow("Library Management System");
         mainPanel = new Panel();
 
         window.setComponent(mainPanel);
-        gui.addWindow(window);
     }
 
     // Display the main menu
@@ -39,44 +34,32 @@ public class LibraryView {
         mainPanel.removeAllComponents();
 
         // Add menu options
-        mainPanel.addComponent(new Label("1. View Books"));
-        mainPanel.addComponent(new Label("2. Add Book"));
-        mainPanel.addComponent(new Label("3. Exit"));
+        mainPanel.addComponent(new Label("Library Management System"));
+        mainPanel.addComponent(new EmptySpace()); // Empty space for better formatting
 
-        // Input for user choice
-        TextBox inputBox = new TextBox();
-        mainPanel.addComponent(inputBox);
-        mainPanel.addComponent(new Button("Submit", () -> {
-            char choice = inputBox.getText().charAt(0);
+        // "View Books" option
+        mainPanel.addComponent(new Button("1. View Books", () -> {
             try {
-                handleInput(choice);
+                controller.displayBooks();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
         }));
 
-        gui.updateScreen();
-    }
+        // "Add Book" option
+        mainPanel.addComponent(new Button("2. Add Book", () -> {
+            try {
+                displayAddBook();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }));
 
-    // Handle user input
-    private void handleInput(Character choice) throws IOException {
-        switch (choice) {
-            case '1':
-                controller.displayBooks();
-                break;
-            case '2':
-                try {
-                    displayAddBook();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                break;
-            case '3':
-                window.close();
-                break;
-            default:
-                showMainMenu();
-        }
+        // "Exit" option
+        mainPanel.addComponent(new Button("3. Exit", window::close));
+
+        // Wait for user to close the window
+        gui.addWindowAndWait(window); // Block and wait for window interaction
     }
 
     // Display list of books
@@ -86,7 +69,14 @@ public class LibraryView {
         mainPanel.addComponent(new Label(books.isEmpty() ? "No books available" : books));
 
         // Add a back button to go to the main menu
-     //   mainPanel.addComponent(new Button("Back", this::showMainMenu));
+        mainPanel.addComponent(new Button("Back", () -> {
+            try {
+                showMainMenu();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }));
+
         gui.updateScreen();
     }
 
@@ -101,8 +91,9 @@ public class LibraryView {
         TextBox authorInput = new TextBox();
         mainPanel.addComponent(authorInput);
 
+        // "Add Book" button to submit the input
         mainPanel.addComponent(new Button("Add Book", () -> {
-            controller.addBook(titleInput.getText(), authorInput.getText()," ");
+            controller.addBook(titleInput.getText(), authorInput.getText(), " ");
             try {
                 showMainMenu();
             } catch (IOException e) {

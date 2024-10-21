@@ -1,51 +1,32 @@
 package org.example.Controller;
 
-import org.example.Model.Book;
-import org.example.Model.Library;
 import org.example.view.LibraryView;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-// The controller for the Library Management System
 public class LibraryController {
-    private Library library;
-    private LibraryView view;
+    private final List<String> books;
+    private final LibraryView view;
 
-    public LibraryController(Library library, LibraryView view) {
-        this.library = library;
+    // Constructor takes LibraryView as a parameter
+    public LibraryController(LibraryView view) {
         this.view = view;
-    }
-
-    public LibraryController() {
-
+        this.books = new ArrayList<>();
     }
 
     // Display the list of books
     public void displayBooks() throws IOException {
         StringBuilder bookList = new StringBuilder();
-        for (Book book : library.getBooks()) {
-            bookList.append(book.toString()).append("\n");
+        for (String book : books) {
+            bookList.append(book).append("\n");
         }
-        view.displayBooks(bookList.toString());
+        view.displayBooks(bookList.toString()); // Call displayBooks in LibraryView
     }
 
-    // Prompt the user to add a book
-    public void addBook() throws IOException {
-        view.displayAddBook();
-    }
-
-    // Add a book to the library
-    public void addBook(String title, String author, String type) {
-        boolean isFound = false;
-        for (Book book : library.getBooks()) {
-            if (book.getTitle().equals(title) && book.getAuthor().equals(author) && book.getType().equals(type)) {
-                book.setStock(book.getStock() + 1);
-                isFound = true;
-            }
-
-        }
-        if (!isFound) {
-            library.addBook(new Book(title, author, type));
-        }
+    // Add a book
+    public void addBook(String title, String author, String extraInfo) {
+        books.add("Title: " + title + ", Author: " + author);
     }
 }

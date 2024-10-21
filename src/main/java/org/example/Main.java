@@ -4,7 +4,6 @@ import com.googlecode.lanterna.screen.TerminalScreen;
 import com.googlecode.lanterna.terminal.Terminal;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.screen.Screen;
-import com.googlecode.lanterna.gui2.MultiWindowTextGUI;
 import org.example.Controller.LibraryController;
 import org.example.view.LibraryView;
 
@@ -12,7 +11,6 @@ import java.util.Locale;
 
 public class Main {
     public static void main(String[] args) {
-
         try {
             Locale.setDefault(Locale.ENGLISH);
 
@@ -24,14 +22,18 @@ public class Main {
             screen.startScreen(); // Start the screen
 
             // Initialize the controller and view
-            LibraryController controller = new LibraryController();
+            LibraryView view = new LibraryView(null); // Pass null initially, we will update it
 
-            LibraryView view = new LibraryView(controller);
+            // Initialize the controller with the view
+            LibraryController controller = new LibraryController(view);
+
+            // Now set the controller inside the view
+            view.setController(controller);
 
             // Initialize the view (sets up the GUI)
-            view.init();
+            view.init(screen);
 
-            // Start the application
+            // Show the main menu and block until the window is closed
             view.showMainMenu();
 
             // Close the screen and terminal when done
