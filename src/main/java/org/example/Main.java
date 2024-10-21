@@ -1,64 +1,45 @@
 package org.example;
 
-import com.googlecode.lanterna.TerminalSize;
-import com.googlecode.lanterna.gui2.BasicWindow;
-import com.googlecode.lanterna.gui2.Button;
-import com.googlecode.lanterna.gui2.Label;
-import com.googlecode.lanterna.gui2.Panel;
-import com.googlecode.lanterna.gui2.WindowBasedTextGUI;
-import com.googlecode.lanterna.gui2.MultiWindowTextGUI;
-import com.googlecode.lanterna.gui2.Window;
-import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.screen.TerminalScreen;
 import com.googlecode.lanterna.terminal.Terminal;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
+import com.googlecode.lanterna.screen.Screen;
+import com.googlecode.lanterna.gui2.MultiWindowTextGUI;
+import org.example.Controller.LibraryController;
+import org.example.view.LibraryView;
 
-import java.io.IOException;
 import java.util.Locale;
 
 public class Main {
-
     public static void main(String[] args) {
-        Locale.setDefault(Locale.ENGLISH);
 
+        try {
+            Locale.setDefault(Locale.ENGLISH);
 
             // Create a terminal object
-            Terminal terminal = new DefaultTerminalFactory().createTerminal(); //auto-detects swing or unix terminal at runtime
+            Terminal terminal = new DefaultTerminalFactory().createTerminal();
 
             // Create a screen to manage the terminal
-        Screen screen = new TerminalScreen(terminal);
-            screen.startScreen();  // Start the screen
+            Screen screen = new TerminalScreen(terminal);
+            screen.startScreen(); // Start the screen
 
-            // Create the GUI with a window to show "Hello World"
-            WindowBasedTextGUI gui = new MultiWindowTextGUI(screen);
+            // Initialize the controller and view
+            LibraryController controller = new LibraryController();
 
-            // Create a basic window
-            Window window = new BasicWindow("Hello World Window");
+            LibraryView view = new LibraryView(controller);
 
-            // Create a panel for layout
-            Panel contentPanel = new Panel();
-            contentPanel.setPreferredSize(new TerminalSize(30, 10));
+            // Initialize the view (sets up the GUI)
+            view.init();
 
-            // Add a label with "Hello World" text
-            contentPanel.addComponent(new Label("Hello World"));
+            // Start the application
+            view.showMainMenu();
 
-            // Add a button to exit the program
-            contentPanel.addComponent(new Button("Exit", () -> {
-                try {
-                    window.close();
-                    screen.stopScreen();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }));
+            // Close the screen and terminal when done
+            screen.stopScreen();
+            terminal.close();
 
-            window.setComponent(contentPanel);
-            gui.addWindowAndWait(window);
-
-
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
-
-
-//The Terminal layer is the lowest level available in Lanterna,
-// giving you very precise control of what data is sent to the client.
