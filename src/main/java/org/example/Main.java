@@ -14,29 +14,22 @@ public class Main {
         try {
             Locale.setDefault(Locale.ENGLISH);
 
-            // Create a terminal object
+
             Terminal terminal = new DefaultTerminalFactory().createTerminal();
 
-            // Create a screen to manage the terminal
             Screen screen = new TerminalScreen(terminal);
-            screen.startScreen(); // Start the screen
+            screen.startScreen(); 
 
             // Initialize the controller and view
-            LibraryView view = new LibraryView(null); // Pass null initially, we will update it
-
-            // Initialize the controller with the view
+            LibraryView view = new LibraryView(null);
             LibraryController controller = new LibraryController(view);
-
-            // Now set the controller inside the view
             view.setController(controller);
 
-            // Initialize the view (sets up the GUI)
+            //  GUI
             view.init(screen);
-
-            // Show the main menu and block until the window is closed
             view.showMainMenu();
 
-            // Close the screen and terminal when done
+            // Close
             screen.stopScreen();
             terminal.close();
 
