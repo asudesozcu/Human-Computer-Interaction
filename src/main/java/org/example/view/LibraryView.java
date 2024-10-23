@@ -34,10 +34,6 @@ public class LibraryView {
         mainPanel.removeAllComponents();
 
         // Add menu options
-        mainPanel.addComponent(new Label("Library Management System"));
-        mainPanel.addComponent(new EmptySpace()); // Empty space for better formatting
-
-        // "View Books" option
         mainPanel.addComponent(new Button("1. View Books", () -> {
             try {
                 controller.displayBooks();
@@ -46,7 +42,6 @@ public class LibraryView {
             }
         }));
 
-        // "Add Book" option
         mainPanel.addComponent(new Button("2. Add Book", () -> {
             try {
                 displayAddBook();
@@ -55,20 +50,18 @@ public class LibraryView {
             }
         }));
 
-        // "Exit" option
         mainPanel.addComponent(new Button("3. Exit", window::close));
 
-        // Wait for user to close the window
-        gui.addWindowAndWait(window); // Block and wait for window interaction
+        // until user close
+        gui.addWindowAndWait(window);
     }
 
-    // Display list of books
     public void displayBooks(String books) throws IOException {
         mainPanel.removeAllComponents();
         mainPanel.addComponent(new Label("Books:"));
         mainPanel.addComponent(new Label(books.isEmpty() ? "No books available" : books));
 
-        // Add a back button to go to the main menu
+
         mainPanel.addComponent(new Button("Back", () -> {
             try {
                 showMainMenu();
@@ -93,7 +86,7 @@ public class LibraryView {
 
         // "Add Book" button to submit the input
         mainPanel.addComponent(new Button("Add Book", () -> {
-            controller.addBook(titleInput.getText(), authorInput.getText(), " ");
+            controller.addBook(titleInput.getText(), authorInput.getText(), " "); // test!! dont forget to add type
             try {
                 showMainMenu();
             } catch (IOException e) {
