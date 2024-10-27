@@ -1,17 +1,29 @@
 package org.example.Model;
-
 public class Book {
+    private int id=0; // Unique ID for the book
     private String title;
     private String author;
-    private int stock ;
-    private String type;
+    private String genre;
+    private int year;
 
-    public Book(String title, String author, String type) {
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    // Constructor
+    public Book(String title, String author, String genre, int year) {
         this.title = title;
         this.author = author;
-        this.stock = 1;
-        this.type = type;
+        this.genre = genre;
+        this.year = year;
+        this.id = ++id; // Generate a unique ID
     }
+
+
 
     public String getTitle() {
         return title;
@@ -21,33 +33,39 @@ public class Book {
         return author;
     }
 
-    public int getStock() {
-        return stock;
-    }
-    public String getType() {
-        return type;
+    public String getGenre() {
+        return genre;
     }
 
-    public static String getInfo(Book book) {
-        return "Title: " + book.getTitle()
-                + "\nAuthor: " + book.getAuthor()
-                + "\nStock: " + book.getStock()
-                + "\nType:  " + book.getType();
+    public int getYear() {
+        return year;
     }
 
     public void setTitle(String title) {
         this.title = title;
     }
 
+    public void setYear(int year) {
+        this.year = year;
+    }
+
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
+
     public void setAuthor(String author) {
         this.author = author;
     }
 
-    public void setStock(int stock) {
-        this.stock = stock;
+    @Override
+    public String toString() {
+        return "Book{" +
+                "id='" + id + '\'' +
+                ", title='" + title + '\'' +
+                ", author='" + author + '\'' +
+                ", genre='" + genre + '\'' +
+                ", year=" + year +
+                '}';
     }
 
-    public void setType(String type) {
-        this.type = type;
-    }
 }
