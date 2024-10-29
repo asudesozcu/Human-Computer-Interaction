@@ -3,12 +3,13 @@ package org.example.Model;
 
 
 public class User {
-    private  int id=0;
+    private static int idCounter = 0; // Static counter shared across all instances
+    private final int id;
     private String name;
     private String email;
 
     public User(String name, String email) {
-        this.id = ++id;
+        this.id = ++idCounter; // Assign a unique ID to each new User instance
         this.name = name;
         this.email = email;
     }

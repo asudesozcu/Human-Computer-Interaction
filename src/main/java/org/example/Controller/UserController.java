@@ -37,7 +37,15 @@ public class UserController {
         return users;
     }
 
-    public boolean removeUser(int id) {
-        return users.removeIf(user -> user.getId() == id);
+
+    public boolean removeUser(int userId) {
+        for (User user : users) {
+            if (user.getId() == userId) {
+                users.remove(user);
+return true;
+            }
+        }
+        return false;
+
     }
 }

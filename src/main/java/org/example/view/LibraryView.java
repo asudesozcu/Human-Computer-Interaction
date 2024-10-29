@@ -29,7 +29,7 @@ public class LibraryView {
         panel.addComponent(new Label("Select Management Option:"));
 
         panel.addComponent(new Button("1. Manage Books", this::displayBookManagementMenu));
-        panel.addComponent(new Button("2. Manage Users", this::displayUserManagementMenu));
+        panel.addComponent(new Button("Manage Users", () -> new UserView(screen, userController).displayUserManagementMenu()));
         panel.addComponent(new Button("Exit", window::close));
 
         window.setComponent(panel);
@@ -51,20 +51,7 @@ public class LibraryView {
         gui.addWindowAndWait(window);
     }
 
-    private void displayUserManagementMenu() {
-        BasicWindow window = new BasicWindow("User Management");
 
-        Panel panel = new Panel();
-        panel.setLayoutManager(new LinearLayout(Direction.VERTICAL));
-        panel.addComponent(new Button("1. Add User", this::displayAddUserForm));
-        panel.addComponent(new Button("2. List Users", this::displayListUsers));
-        panel.addComponent(new Button("3. Edit User", this::displayEditUserForm));
-        panel.addComponent(new Button("4. Remove User", this::displayRemoveUserForm));
-        panel.addComponent(new Button("Back", window::close));
-
-        window.setComponent(panel);
-        gui.addWindowAndWait(window);
-    }
 
     private void displayAddBookForm() {
         BasicWindow window = new BasicWindow("Add Book");
@@ -194,123 +181,7 @@ public class LibraryView {
         gui.addWindowAndWait(window);
     }
 
-    private void displayAddUserForm() {
-        BasicWindow window = new BasicWindow("Add User");
 
-        Panel panel = new Panel();
-        panel.setLayoutManager(new LinearLayout(Direction.VERTICAL));
-
-        TextBox usernameInput = new TextBox(new TerminalSize(20, 1));
-        TextBox emailInput = new TextBox(new TerminalSize(20, 1));
-
-        panel.addComponent(new Label("Username:"));
-        panel.addComponent(usernameInput);
-        panel.addComponent(new Label("Email:"));
-        panel.addComponent(emailInput);
-
-        panel.addComponent(new Button("Save", () -> {
-            userController.addUser(usernameInput.getText(), emailInput.getText());
-            gui.removeWindow(window);
-        }));
-        panel.addComponent(new Button("Cancel", () -> gui.removeWindow(window)));
-
-        window.setComponent(panel);
-        gui.addWindowAndWait(window);
-    }
-
-    private void displayListUsers() {
-        BasicWindow window = new BasicWindow("List of Users");
-
-        Panel panel = new Panel();
-        panel.setLayoutManager(new LinearLayout(Direction.VERTICAL));
-
-        if (userController.getAllUsers().isEmpty()) {
-            panel.addComponent(new Label("No users available."));
-        } else {
-            for (User user : userController.getAllUsers()) {
-                panel.addComponent(new Label(user.toString()));
-            }
-        }
-
-        panel.addComponent(new Button("Back", () -> gui.removeWindow(window)));
-        window.setComponent(panel);
-        gui.addWindowAndWait(window);
-    }
-
-    private void displayEditUserForm() {
-        BasicWindow window = new BasicWindow("Edit User");
-
-        if (userController.getAllUsers().isEmpty()) {
-            showErrorMessage("No users available to edit.");
-            return;
-        }
-
-        Panel panel = new Panel();
-        panel.setLayoutManager(new LinearLayout(Direction.VERTICAL));
-
-        for (int i = 0; i < userController.getAllUsers().size(); i++) {
-            User user = userController.getAllUsers().get(i);
-            final int index = i;
-            panel.addComponent(new Button(user.getName(), () -> {
-                gui.removeWindow(window);
-                showEditUserDetails(index);
-            }));
-        }
-
-        panel.addComponent(new Button("Back", () -> gui.removeWindow(window)));
-        window.setComponent(panel);
-        gui.addWindowAndWait(window);
-    }
-
-    private void displayRemoveUserForm() {
-        BasicWindow window = new BasicWindow("Remove User");
-
-        if (userController.getAllUsers().isEmpty()) {
-            showErrorMessage("No users available to remove.");
-            return;
-        }
-
-        Panel panel = new Panel();
-        panel.setLayoutManager(new LinearLayout(Direction.VERTICAL));
-
-        for (int i = 0; i < userController.getAllUsers().size(); i++) {
-            User user = userController.getAllUsers().get(i);
-            final int index = i;
-            panel.addComponent(new Button(user.getName(), () -> {
-                userController.removeUser(index);
-                gui.removeWindow(window);
-            }));
-        }
-
-        panel.addComponent(new Button("Back", () -> gui.removeWindow(window)));
-        window.setComponent(panel);
-        gui.addWindowAndWait(window);
-    }
-
-    private void showEditUserDetails(int index) {
-        BasicWindow window = new BasicWindow("Edit User");
-
-        User user = userController.getAllUsers().get(index);
-        Panel panel = new Panel();
-        panel.setLayoutManager(new LinearLayout(Direction.VERTICAL));
-
-        TextBox usernameInput = new TextBox(new TerminalSize(20, 1), user.getName());
-        TextBox emailInput = new TextBox(new TerminalSize(20, 1), user.getEmail());
-
-        panel.addComponent(new Label("Username:"));
-        panel.addComponent(usernameInput);
-        panel.addComponent(new Label("Email:"));
-        panel.addComponent(emailInput);
-
-        panel.addComponent(new Button("Save", () -> {
-            userController.updateUser(user.getId(), usernameInput.getText(), emailInput.getText());
-            gui.removeWindow(window);
-        }));
-        panel.addComponent(new Button("Cancel", () -> gui.removeWindow(window)));
-
-        window.setComponent(panel);
-        gui.addWindowAndWait(window);
-    }
 
     private void showErrorMessage(String message) {
         BasicWindow window = new BasicWindow("Error");
