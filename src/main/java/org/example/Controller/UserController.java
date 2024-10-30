@@ -1,5 +1,6 @@
 package org.example.Controller;
 
+import org.example.Model.Book;
 import org.example.Model.User;
 
 import java.util.ArrayList;
@@ -47,5 +48,24 @@ return true;
         }
         return false;
 
+    }
+    public User findUserById(int id) {
+        return users.stream().filter(user -> user.getId() == id).findFirst().orElse(null);
+    }
+    public boolean borrowBookForUser(int userId, Book book) {
+        User user = findUserById(userId);
+        if (user != null && !book.isBorrowed()) {
+            user.borrowBook(book);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean returnBookForUser(int userId, int bookId) {
+        User user = findUserById(userId);
+        if (user != null) {
+            return user.returnBook(bookId);
+        }
+        return false;
     }
 }

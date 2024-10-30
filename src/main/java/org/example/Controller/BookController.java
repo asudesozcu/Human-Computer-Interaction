@@ -23,7 +23,7 @@ public class BookController {
     public Optional<Book> findBookById(int id) {
         return books.stream()
                 .filter(book -> book.getId() == id)
-                .findFirst(); // Use findFirst to get the first match as Optional
+                .findFirst();
     }
 
     public List<Book> getAllBooks() {
@@ -38,6 +38,24 @@ public class BookController {
             book.setAuthor(author);
             book.setGenre(genre);
             book.setYear(year);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean borrowBook(int bookId) {
+        Optional<Book> bookOpt = findBookById(bookId);
+        if (bookOpt.isPresent() && !bookOpt.get().isBorrowed()) {
+            bookOpt.get().setBorrowed(true);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean returnBook(int bookId) {
+        Optional<Book> bookOpt = findBookById(bookId);
+        if (bookOpt.isPresent() && bookOpt.get().isBorrowed()) {
+            bookOpt.get().setBorrowed(false);
             return true;
         }
         return false;

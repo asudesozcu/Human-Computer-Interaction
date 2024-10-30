@@ -2,6 +2,8 @@ package org.example.view;
 
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.gui2.*;
+import com.googlecode.lanterna.gui2.dialogs.MessageDialog;
+import com.googlecode.lanterna.gui2.dialogs.MessageDialogButton;
 import com.googlecode.lanterna.screen.Screen;
 import org.example.Controller.BookController;
 import org.example.Controller.UserController;
@@ -29,8 +31,10 @@ public class LibraryView {
         panel.addComponent(new Label("Select Management Option:"));
 
         panel.addComponent(new Button("1. Manage Books", this::displayBookManagementMenu));
-        panel.addComponent(new Button("Manage Users", () -> new UserView(screen, userController).displayUserManagementMenu()));
-        panel.addComponent(new Button("Exit", window::close));
+        panel.addComponent(new Button("2. Manage Users", () -> new UserView(screen, userController).displayUserManagementMenu()));
+        panel.addComponent(new Button("3. Borrow Book", this::borrowBook));
+        panel.addComponent(new Button("4. Return Book", this::returnBook));
+        panel.addComponent(new Button("5. Exit", window::close));
 
         window.setComponent(panel);
         gui.addWindowAndWait(window);
@@ -52,7 +56,79 @@ public class LibraryView {
     }
 
 
+    private void borrowBook() {
+        BasicWindow window = new BasicWindow("Borrow Book");
 
+        Panel panel = new Panel();
+        panel.setLayoutManager(new LinearLayout(Direction.VERTICAL));
+
+        TextBox userIdInput = new TextBox(new TerminalSize(20, 1));
+        TextBox bookIdInput = new TextBox(new TerminalSize(20, 1));
+
+        panel.addComponent(new Label("Enter User ID:"));
+        panel.addComponent(userIdInput);
+        panel.addComponent(new Label("Enter Book ID:"));
+        panel.addComponent(bookIdInput);
+
+        panel.addComponent(new Button("Borrow", () -> {
+            try {
+                int userId = Integer.parseInt(userIdInput.getText());
+                int bookId = Integer.parseInt(bookIdInput.getText());
+
+                Book book = bookController.findBookById(bookId).orElse(null);
+                if (book != null && bookController.borrowBook(bookId)) {
+                    userController.borrowBookForUser(userId, book);
+                    showSuccessMessage("Book borrowed successfully!");
+                } else {
+                    showErrorMessage("Failed to borrow book.");
+                }
+            } catch (NumberFormatException e) {
+                showErrorMessage("Invalid ID entered.");
+            }
+            gui.removeWindow(window);
+        }));
+        panel.addComponent(new Button("Cancel", () -> gui.removeWindow(window)));
+
+        window.setComponent(panel);
+        gui.addWindowAndWait(window);
+    }
+
+    private void returnBook() {
+        BasicWindow window = new BasicWindow("Return Book");
+
+        Panel panel = new Panel();
+        panel.setLayoutManager(new LinearLayout(Direction.VERTICAL));
+
+        TextBox userIdInput = new TextBox(new TerminalSize(20, 1));
+        TextBox bookIdInput = new TextBox(new TerminalSize(20, 1));
+
+        panel.addComponent(new Label("Enter User ID:"));
+        panel.addComponent(userIdInput);
+        panel.addComponent(new Label("Enter Book ID:"));
+        panel.addComponent(bookIdInput);
+
+        panel.addComponent(new Button("Return", () -> {
+            try {
+                int userId = Integer.parseInt(userIdInput.getText());
+                int bookId = Integer.parseInt(bookIdInput.getText());
+
+                Book book = bookController.findBookById(bookId).orElse(null);
+                if (book != null && bookController.returnBook(bookId)) {
+                    userController.returnBookForUser(userId, book.getId());
+                    showSuccessMessage("Book returned successfully!");
+                } else {
+                    showErrorMessage("Failed to return book.");
+                }
+            } catch (NumberFormatException e) {
+                showErrorMessage("Invalid ID entered.");
+            }
+            gui.removeWindow(window);
+        }));
+        panel.addComponent(new Button("Cancel", () -> gui.removeWindow(window)));
+
+        window.setComponent(panel);
+        gui.addWindowAndWait(window);
+    }
     private void displayAddBookForm() {
         BasicWindow window = new BasicWindow("Add Book");
 
@@ -182,16 +258,12 @@ public class LibraryView {
     }
 
 
-
     private void showErrorMessage(String message) {
-        BasicWindow window = new BasicWindow("Error");
-
-        Panel panel = new Panel();
-        panel.setLayoutManager(new LinearLayout(Direction.VERTICAL));
-        panel.addComponent(new Label(message));
-        panel.addComponent(new Button("OK", () -> gui.removeWindow(window)));
-
-        window.setComponent(panel);
-        gui.addWindowAndWait(window);
+        MessageDialog.showMessageDialog(gui, "Error", message, MessageDialogButton.OK);
     }
+
+    private void showSuccessMessage(String message) {
+        MessageDialog.showMessageDialog(gui, "Success", message, MessageDialogButton.OK);
+    }
+
 }

@@ -1,26 +1,25 @@
 package org.example.Model;
 public class Book {
-    private int id=0; // Unique ID for the book
+    private static int idCounter = 0;
+    private final int id;
     private String title;
     private String author;
     private String genre;
     private int year;
+    private boolean isBorrowed;
 
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
 
-    // Constructor
-    public Book(String title, String author, String genre, int year) {
+    public Book(String title, String author,String genre, int year) {
+        this.id = ++idCounter;
         this.title = title;
         this.author = author;
         this.genre = genre;
         this.year = year;
-        this.id = ++id; // Generate a unique ID
+        this.isBorrowed = false;
     }
 
 
@@ -56,6 +55,14 @@ public class Book {
     public void setAuthor(String author) {
         this.author = author;
     }
+    public boolean isBorrowed() {
+        return isBorrowed;
+    }
+
+    public void setBorrowed(boolean borrowed) {
+        isBorrowed = borrowed;
+    }
+
 
     @Override
     public String toString() {
@@ -65,6 +72,7 @@ public class Book {
                 ", author='" + author + '\'' +
                 ", genre='" + genre + '\'' +
                 ", year=" + year +
+                (isBorrowed ? " (Borrowed)" : "") +
                 '}';
     }
 
