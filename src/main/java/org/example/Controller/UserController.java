@@ -8,8 +8,11 @@ import java.util.List;
 
 public class UserController {
     private final List<User> users ;
+    private final BookController bookController;
 
-    public UserController() {
+
+    public UserController(BookController bookController) {
+        this.bookController = bookController;
         this.users = new ArrayList<>();
 
     }
@@ -52,20 +55,32 @@ return true;
     public User findUserById(int id) {
         return users.stream().filter(user -> user.getId() == id).findFirst().orElse(null);
     }
-    public boolean borrowBookForUser(int userId, Book book) {
-        User user = findUserById(userId);
+    public User findUserByName(String name) {
+        return users.stream().filter(user -> user.getName().equals(name)).findFirst().orElse(null);
+    }
+
+    public boolean borrowBookForUser(String username, Book book) {
+        User user = findUserByName(username);
+        System.out.println(book.isBorrowed());
         if (user != null && !book.isBorrowed()) {
             user.borrowBook(book);
+            book.setBorrowed(true);  // Mark the book as borrowed
             return true;
         }
         return false;
     }
 
-    public boolean returnBookForUser(int userId, int bookId) {
-        User user = findUserById(userId);
-        if (user != null) {
-            return user.returnBook(bookId);
+    public boolean returnBookForUser(String username, int bookId) {
+        User user = findUserByName(username);
+        if (user == null) return false;
+
+        boolean removed = user.getBorrowedBooks().removeIf(book -> book.getId() == bookId);
+        if (removed) {
+            Book book = bookController.findBookById(bookId).orElse(null);  // Access via instance
+            if (book != null) {
+                book.setBorrowed(false);  // Update the book's borrowed status
+            }
         }
-        return false;
+        return removed;
     }
 }

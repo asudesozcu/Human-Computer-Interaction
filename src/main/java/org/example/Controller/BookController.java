@@ -43,14 +43,7 @@ public class BookController {
         return false;
     }
 
-    public boolean borrowBook(int bookId) {
-        Optional<Book> bookOpt = findBookById(bookId);
-        if (bookOpt.isPresent() && !bookOpt.get().isBorrowed()) {
-            bookOpt.get().setBorrowed(true);
-            return true;
-        }
-        return false;
-    }
+
 
     public boolean returnBook(int bookId) {
         Optional<Book> bookOpt = findBookById(bookId);
