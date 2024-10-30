@@ -62,28 +62,29 @@ public class LibraryView {
         Panel panel = new Panel();
         panel.setLayoutManager(new LinearLayout(Direction.VERTICAL));
 
-        TextBox userIdInput = new TextBox(new TerminalSize(20, 1));
+        TextBox userNameInput = new TextBox(new TerminalSize(20, 1));
         TextBox bookIdInput = new TextBox(new TerminalSize(20, 1));
 
-        panel.addComponent(new Label("Enter User ID:"));
-        panel.addComponent(userIdInput);
+        panel.addComponent(new Label("Enter Username:"));
+        panel.addComponent(userNameInput);
         panel.addComponent(new Label("Enter Book ID:"));
         panel.addComponent(bookIdInput);
 
         panel.addComponent(new Button("Borrow", () -> {
+            String userName = userNameInput.getText();
             try {
-                int userId = Integer.parseInt(userIdInput.getText());
                 int bookId = Integer.parseInt(bookIdInput.getText());
 
+                User user = userController.findUserByName(userName);
                 Book book = bookController.findBookById(bookId).orElse(null);
-                if (book != null && bookController.borrowBook(bookId)) {
-                    userController.borrowBookForUser(userId, book);
+
+                if (user != null && book != null && userController.borrowBookForUser(userName, book)) {
                     showSuccessMessage("Book borrowed successfully!");
                 } else {
-                    showErrorMessage("Failed to borrow book.");
+                    showErrorMessage("Failed to borrow book. It may already be borrowed or user/book is invalid.");
                 }
             } catch (NumberFormatException e) {
-                showErrorMessage("Invalid ID entered.");
+                showErrorMessage("Invalid Book ID entered.");
             }
             gui.removeWindow(window);
         }));
@@ -92,35 +93,40 @@ public class LibraryView {
         window.setComponent(panel);
         gui.addWindowAndWait(window);
     }
-
     private void returnBook() {
         BasicWindow window = new BasicWindow("Return Book");
 
         Panel panel = new Panel();
         panel.setLayoutManager(new LinearLayout(Direction.VERTICAL));
 
-        TextBox userIdInput = new TextBox(new TerminalSize(20, 1));
+        TextBox userNameInput = new TextBox(new TerminalSize(20, 1));
         TextBox bookIdInput = new TextBox(new TerminalSize(20, 1));
 
-        panel.addComponent(new Label("Enter User ID:"));
-        panel.addComponent(userIdInput);
+        panel.addComponent(new Label("Enter Username:"));
+        panel.addComponent(userNameInput);
         panel.addComponent(new Label("Enter Book ID:"));
         panel.addComponent(bookIdInput);
 
         panel.addComponent(new Button("Return", () -> {
+            String userName = userNameInput.getText();
             try {
-                int userId = Integer.parseInt(userIdInput.getText());
                 int bookId = Integer.parseInt(bookIdInput.getText());
 
+                User user = userController.findUserByName(userName);
                 Book book = bookController.findBookById(bookId).orElse(null);
-                if (book != null && bookController.returnBook(bookId)) {
-                    userController.returnBookForUser(userId, book.getId());
-                    showSuccessMessage("Book returned successfully!");
+
+                if (user != null && book != null ) {
+                    if (bookController.returnBook(bookId)) {
+                        userController.returnBookForUser(user.getName(), book.getId());
+                        showSuccessMessage("Book returned successfully!");
+                    } else {
+                        showErrorMessage("Failed to return book.");
+                    }
                 } else {
-                    showErrorMessage("Failed to return book.");
+                    showErrorMessage("User has not borrowed this book or invalid user/book.");
                 }
             } catch (NumberFormatException e) {
-                showErrorMessage("Invalid ID entered.");
+                showErrorMessage("Invalid Book ID entered.");
             }
             gui.removeWindow(window);
         }));
@@ -129,6 +135,7 @@ public class LibraryView {
         window.setComponent(panel);
         gui.addWindowAndWait(window);
     }
+
     private void displayAddBookForm() {
         BasicWindow window = new BasicWindow("Add Book");
 

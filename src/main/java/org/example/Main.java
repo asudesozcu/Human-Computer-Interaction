@@ -35,7 +35,7 @@ public class Main {
 
             // Initialize controllers
             BookController libraryController = new BookController();
-            UserController userController = new UserController();
+            UserController userController = new UserController(libraryController);
 
             // Create and display the main view
             LibraryView libraryView = new LibraryView(screen, libraryController, userController);
